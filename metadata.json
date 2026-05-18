@@ -1,0 +1,6 @@
+{
+  "name": "DebtFlow: Debt & Monthly Payment Manager",
+  "description": "DebtFlow is a comprehensive financial manager featuring Bikram Sambat (BS) calendar integration. Track personal debts, navigate monthly bills, and manage income/expenses with localized Nepali support and secure cloud sync.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["Supabase Authentication", "PostgreSQL Database", "Real-time Updates", "Nepali Calendar (BS) Support"]
+}

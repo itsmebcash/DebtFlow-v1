@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">DebtFlow</string>
+    <string name="title_activity_main">DebtFlow</string>
+    <string name="package_name">com.debtflow.app</string>
+    <string name="custom_url_scheme">com.debtflow.app</string>
+</resources>

@@ -1,0 +1,11 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.itsmebcash.debtflow",
+      "sha256_cert_fingerprints":
+        ["33:58:4B:C1:58:BA:08:74:99:CE:78:B7:B3:75:6C:73:D8:D6:89:61:8E:A6:A1:E3:15:08:C0:E5:59:3D:8D:2F"]
+    }
+  }
+]
