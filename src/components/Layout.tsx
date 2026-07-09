@@ -22,7 +22,9 @@ import {
   Bell,
   BellOff,
   Banknote,
-  Plus
+  Plus,
+  Lightbulb,
+  Share2
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -59,6 +61,44 @@ const navItems = [
   { icon: Banknote, label: 'Finance', path: '/finance' },
 ];
 
+const bannerSlides = [
+  {
+    icon: Receipt,
+    title: 'Track Debts',
+    desc: 'Record who owes you and who you owe. Track payments and share public statements with anyone.',
+    color: 'from-indigo-500/20 to-purple-500/20',
+    badge: 'Debt Tracking'
+  },
+  {
+    icon: Repeat,
+    title: 'Monthly Bills',
+    desc: 'Manage recurring payments like rent, EMI, and subscriptions. Mark paid each month & generate proof for landlords.',
+    color: 'from-emerald-500/20 to-teal-500/20',
+    badge: 'Recurring'
+  },
+  {
+    icon: Banknote,
+    title: 'Income & Expenses',
+    desc: 'Log your earnings and spending. Deduct expenses from income sources automatically.',
+    color: 'from-amber-500/20 to-orange-500/20',
+    badge: 'Finance'
+  },
+  {
+    icon: Plus,
+    title: 'Quick Record',
+    desc: 'Instantly record an expense with the "Record" button on mobile or "Quick Record" in the sidebar on desktop.',
+    color: 'from-rose-500/20 to-pink-500/20',
+    badge: 'Quick Action'
+  },
+  {
+    icon: Share2,
+    title: 'Share Statements',
+    desc: 'Generate public share links for debts or recurring payments. Send them to landlords, lenders, or anyone who needs proof.',
+    color: 'from-blue-500/20 to-cyan-500/20',
+    badge: 'Sharing'
+  }
+];
+
 export default function Layout() {
   const { user, profile, isGuest, signOut, refreshProfile } = useAuth();
   const location = useLocation();
@@ -68,6 +108,17 @@ export default function Layout() {
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
+
+  const [showBanner, setShowBanner] = useState(() => {
+    return localStorage.getItem('debtflow_banner_dismissed') !== 'true';
+  });
+
+  const [activeBannerSlide, setActiveBannerSlide] = useState(0);
+
+  const dismissBanner = () => {
+    setShowBanner(false);
+    localStorage.setItem('debtflow_banner_dismissed', 'true');
+  };
 
   const [formData, setFormData] = useState({
     full_name: profile?.full_name || '',
@@ -223,6 +274,17 @@ export default function Layout() {
                 </Link>
               );
             })}
+
+            {/* Desktop Quick Add - Separator */}
+            <div className="pt-6">
+              <Link
+                to="/quick-add"
+                className="flex items-center justify-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-95"
+              >
+                <Plus size={20} strokeWidth={3} />
+                Quick Record
+              </Link>
+            </div>
           </nav>
 
           <div className="p-6 space-y-4">
@@ -258,6 +320,98 @@ export default function Layout() {
         {/* Content Area */}
         <main className="flex-1 overflow-y-auto pb-24 md:pb-0">
           <div className="max-w-7xl mx-auto p-6 md:p-10">
+            {/* Usage Guide Banner */}
+            {showBanner && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 relative overflow-hidden rounded-[1.5rem]"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent" />
+                <div className="relative glass-card border-white/5 p-5">
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-indigo-500/15 text-indigo-400 rounded-xl">
+                        <Lightbulb size={18} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-white">Getting Started</h3>
+                        <p className="text-[10px] text-slate-500 font-medium">Quick overview of what you can do</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={dismissBanner}
+                      className="p-1.5 rounded-lg text-slate-600 hover:text-white hover:bg-white/5 transition-all"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>                    {/* Feature Slides */}
+                    <div className="relative">
+                      <div 
+                        className="flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth"
+                        onScroll={(e) => {
+                          const container = e.currentTarget;
+                          const scrollLeft = container.scrollLeft;
+                          const cardWidth = container.children[0]?.clientWidth || 280;
+                          const gap = 12;
+                          const newIdx = Math.round(scrollLeft / (cardWidth + gap));
+                          if (newIdx !== activeBannerSlide) {
+                            setActiveBannerSlide(Math.min(newIdx, bannerSlides.length - 1));
+                          }
+                        }}
+                      >
+                        {bannerSlides.map((slide, idx) => (
+                          <motion.div
+                            key={idx}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: idx * 0.08 }}
+                            className="min-w-[250px] sm:min-w-[280px] flex-shrink-0 snap-start"
+                          >
+                            <div className={`p-4 rounded-xl bg-gradient-to-br ${slide.color} border border-white/5 h-full`}>
+                              <div className="flex items-center gap-2 mb-2">
+                                <slide.icon size={16} className="text-white" />
+                                <span className="text-[9px] font-black uppercase tracking-[0.15em] text-white/60">
+                                  {slide.badge}
+                                </span>
+                              </div>
+                              <h4 className="text-sm font-bold text-white mb-1">{slide.title}</h4>
+                              <p className="text-[11px] text-slate-400 leading-relaxed">{slide.desc}</p>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+
+                      {/* Scroll hint dots */}
+                      <div className="flex items-center justify-center gap-1.5 mt-4">
+                        {bannerSlides.map((_, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => {
+                              const container = document.querySelector('.no-scrollbar');
+                              if (container) {
+                                const child = container.children[idx] as HTMLElement;
+                                if (child) child.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+                              }
+                              setActiveBannerSlide(idx);
+                            }}
+                            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                              idx === activeBannerSlide ? 'bg-indigo-400 w-4' : 'bg-white/10 hover:bg-white/20'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                  {/* Dismiss hint */}
+                  <p className="text-[8px] text-slate-700 text-center mt-3 font-medium uppercase tracking-widest">
+                    Click <span className="text-indigo-500">X</span> to dismiss — you can always re-read in About Us
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
             <Outlet />
           </div>
         </main>

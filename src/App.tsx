@@ -14,6 +14,7 @@ import Recurring from './pages/Recurring';
 import Finance from './pages/Finance';
 import QuickAdd from './pages/QuickAdd';
 import PublicDebt from './pages/PublicDebt';
+import PublicRecurring from './pages/PublicRecurring';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import DataDeletion from './pages/DataDeletion';
 import Layout from './components/Layout';
@@ -43,6 +44,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/shared/:publicId" element={<PublicDebt />} />
+          <Route path="/shared-recurring/:publicId" element={<PublicRecurring />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/data-deletion" element={<DataDeletion />} />
           

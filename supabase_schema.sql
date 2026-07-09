@@ -55,6 +55,8 @@ CREATE TABLE recurring_payments (
   reminder_enabled BOOLEAN DEFAULT true,
   notes TEXT,
   is_active BOOLEAN DEFAULT true,
+  is_public BOOLEAN DEFAULT false,
+  public_id TEXT UNIQUE DEFAULT encode(gen_random_bytes(6), 'hex'),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -130,11 +132,14 @@ USING (EXISTS (SELECT 1 FROM debts WHERE id = debt_payments.debt_id AND is_publi
 -- Recurring Payments
 ALTER TABLE recurring_payments ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can manage their own recurring payments" ON recurring_payments FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Public can view shared recurring payments" ON recurring_payments FOR SELECT USING (is_public = true);
 
 -- Recurring History
 ALTER TABLE recurring_history ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can manage their own recurring history" ON recurring_history FOR ALL 
 USING (EXISTS (SELECT 1 FROM recurring_payments WHERE id = recurring_history.recurring_id AND user_id = auth.uid()));
+CREATE POLICY "Public can view history for shared recurring payments" ON recurring_history FOR SELECT 
+USING (EXISTS (SELECT 1 FROM recurring_payments WHERE id = recurring_history.recurring_id AND is_public = true));
 
 -- Incomes
 ALTER TABLE incomes ENABLE ROW LEVEL SECURITY;

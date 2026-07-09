@@ -15,7 +15,8 @@ import {
   ChevronDown,
   ChevronUp,
   TrendingDown,
-  Globe
+  Globe,
+  Share2
 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -235,6 +236,24 @@ export default function Recurring() {
       toast.success('Obligation deleted');
       setItemToDelete(null);
       setIsDeleteConfirmOpen(false);
+      fetchData();
+    }
+  };
+
+  const handleShareRecurring = async (item: Recurring) => {
+    if (isGuest) {
+      toast.error('Please Login to share');
+      return;
+    }
+    
+    const { error } = await storage.updateRecurring(item.id, { is_public: true }, isGuest);
+
+    if (error) {
+      toast.error('Failed to share');
+    } else {
+      const shareUrl = `https://www.debtflow.asia/shared-recurring/${item.public_id}`;
+      navigator.clipboard.writeText(shareUrl);
+      toast.success('Public statement URL copied to clipboard');
       fetchData();
     }
   };
@@ -493,6 +512,10 @@ export default function Recurring() {
                               <DropdownMenuContent align="end" className="glass-card border-white/10 text-white">
                                 <DropdownMenuItem onClick={() => { setSelectedItem(item); setIsFormDialogOpen(true); }}>
                                   Edit Setup
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleShareRecurring(item)}>
+                                  <Share2 size={14} className="mr-2" />
+                                  {item.is_public ? 'Copy Statement Link' : 'Share Statement'}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => confirmDelete(item.id)} className="text-rose-400">
                                   Delete Obligation

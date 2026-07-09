@@ -171,6 +171,8 @@ export interface Database {
           reminder_enabled: boolean
           notes: string | null
           is_active: boolean
+          is_public: boolean
+          public_id: string | null
           created_at: string
           updated_at: string
         }
@@ -186,6 +188,8 @@ export interface Database {
           reminder_enabled?: boolean
           notes?: string | null
           is_active?: boolean
+          is_public?: boolean
+          public_id?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -201,6 +205,8 @@ export interface Database {
           reminder_enabled?: boolean
           notes?: string | null
           is_active?: boolean
+          is_public?: boolean
+          public_id?: string | null
           created_at?: string
           updated_at?: string
         }

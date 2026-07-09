@@ -157,7 +157,7 @@ export default function Debts() {
     if (error) {
       toast.error('Failed to share');
     } else {
-      const shareUrl = `${window.location.origin}/shared/${debt.public_id}`;
+      const shareUrl = `https://www.debtflow.asia/shared/${debt.public_id}`;
       navigator.clipboard.writeText(shareUrl);
       toast.success('Public URL copied to clipboard');
       fetchDebts();
