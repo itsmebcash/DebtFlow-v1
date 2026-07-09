@@ -17,6 +17,13 @@ android/app/src/main/res/drawable-land-*/splash.png
 android/app/src/main/res/drawable*/splash.png
 
 # ============================================================
+# Android Signing & Keystore
+# ============================================================
+keystore.properties
+*.keystore
+*.jks
+
+# ============================================================
 # Android Build Output & Cache
 # ============================================================
 android/app/build/
