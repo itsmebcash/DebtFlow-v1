@@ -152,12 +152,17 @@ export default function Debts() {
       toast.error('Please Login to share');
       return;
     }
-    const { error } = await storage.updateDebt(debt.id, { is_public: true }, isGuest);
+    const { data: updatedDebt, error } = await storage.updateDebt(debt.id, { is_public: true }, isGuest);
 
     if (error) {
       toast.error('Failed to share');
     } else {
-      const shareUrl = `https://www.debtflow.asia/shared/${debt.public_id}`;
+      const publicId = updatedDebt?.public_id || debt.public_id;
+      if (!publicId) {
+        toast.error('No public ID available for this debt');
+        return;
+      }
+      const shareUrl = `${window.location.origin}/shared/${publicId}`;
       navigator.clipboard.writeText(shareUrl);
       toast.success('Public URL copied to clipboard');
       fetchDebts();

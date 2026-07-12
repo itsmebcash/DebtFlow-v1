@@ -246,12 +246,17 @@ export default function Recurring() {
       return;
     }
     
-    const { error } = await storage.updateRecurring(item.id, { is_public: true }, isGuest);
+    const { data: updatedRecurring, error } = await storage.updateRecurring(item.id, { is_public: true }, isGuest);
 
     if (error) {
       toast.error('Failed to share');
     } else {
-      const shareUrl = `https://www.debtflow.asia/shared-recurring/${item.public_id}`;
+      const publicId = updatedRecurring?.public_id || item.public_id;
+      if (!publicId) {
+        toast.error('No public ID available for this payment');
+        return;
+      }
+      const shareUrl = `${window.location.origin}/shared-recurring/${publicId}`;
       navigator.clipboard.writeText(shareUrl);
       toast.success('Public statement URL copied to clipboard');
       fetchData();

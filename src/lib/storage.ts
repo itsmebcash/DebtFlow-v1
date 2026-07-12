@@ -56,10 +56,16 @@ export const storage = {
     return supabase.from('debts').select('*').eq('user_id', userId).order('created_at', { ascending: false });
   },
 
+  generatePublicId(): string {
+    const bytes = new Uint8Array(6);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+  },
+
   async addDebt(debt: any, isGuest: boolean) {
     if (isGuest) {
       const data = getLocalData();
-      const newDebt = { ...debt, id: crypto.randomUUID(), created_at: new Date().toISOString() };
+      const newDebt = { ...debt, id: crypto.randomUUID(), public_id: this.generatePublicId(), created_at: new Date().toISOString() };
       data.debts.push(newDebt);
       saveLocalData(data);
       return { data: newDebt, error: null };
@@ -70,11 +76,18 @@ export const storage = {
   async updateDebt(id: string, updates: any, isGuest: boolean) {
     if (isGuest) {
       const data = getLocalData();
-      data.debts = data.debts.map(d => d.id === id ? { ...d, ...updates } : d);
+      let updatedDebt: any = null;
+      data.debts = data.debts.map(d => {
+        if (d.id === id) {
+          updatedDebt = { ...d, ...updates };
+          return updatedDebt;
+        }
+        return d;
+      });
       saveLocalData(data);
-      return { error: null };
+      return { data: updatedDebt, error: null };
     }
-    return supabase.from('debts').update(updates).eq('id', id);
+    return supabase.from('debts').update(updates).eq('id', id).select().single();
   },
 
   async deleteDebt(id: string, isGuest: boolean) {
@@ -98,7 +111,7 @@ export const storage = {
   async addRecurring(item: any, isGuest: boolean) {
     if (isGuest) {
       const data = getLocalData();
-      const newItem = { ...item, id: crypto.randomUUID(), created_at: new Date().toISOString() };
+      const newItem = { ...item, id: crypto.randomUUID(), public_id: this.generatePublicId(), created_at: new Date().toISOString() };
       data.recurring_payments.push(newItem);
       saveLocalData(data);
       return { data: newItem, error: null };
@@ -181,11 +194,18 @@ export const storage = {
   async updateRecurring(id: string, updates: any, isGuest: boolean) {
     if (isGuest) {
       const data = getLocalData();
-      data.recurring_payments = data.recurring_payments.map(r => r.id === id ? { ...r, ...updates } : r);
+      let updatedRecurring: any = null;
+      data.recurring_payments = data.recurring_payments.map(r => {
+        if (r.id === id) {
+          updatedRecurring = { ...r, ...updates };
+          return updatedRecurring;
+        }
+        return r;
+      });
       saveLocalData(data);
-      return { error: null };
+      return { data: updatedRecurring, error: null };
     }
-    return supabase.from('recurring_payments').update(updates).eq('id', id);
+    return supabase.from('recurring_payments').update(updates).eq('id', id).select().single();
   },
 
   async updateProfile(id: string, updates: any, isGuest: boolean) {
